@@ -30,6 +30,9 @@ public class Post {
     @Column(nullable = false)
     private PostType postType;
 
+    @Column(nullable = false)
+    private String imageUrl;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
