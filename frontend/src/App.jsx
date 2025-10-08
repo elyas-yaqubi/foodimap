@@ -1,12 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/loginPage.jsx";
+import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
+import HomePage from "./pages/HomePage.jsx";
 
 function App() {
     return (
         <Router>
-            {/* Navbar stays visible on every page */}
-
             {/* Define page routes here */}
             <Routes>
                 <Route path="/" element={<LoginPage />} />
