@@ -20,8 +20,15 @@ import {
     VStack,
     Select,
 } from '@chakra-ui/react';
+import axios from "axios";
+import {useNavigate} from "react-router-dom";
+
+const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL;
 
 function App() {
+
+    const navigate = useNavigate();
+
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [image, setImage] = useState(null);
     const [caption, setCaption] = useState('');
@@ -43,16 +50,39 @@ function App() {
         setPostType('Review');
     };
 
+    const handleLogout = async () => {
+
+        try {
+            const response = await axios.post(`${backendApiUrl}/api/auth/logout`);
+
+            console.log(response.data);
+
+            localStorage.removeItem("token");
+
+            navigate("/login");
+
+        } catch (error) {
+            console.log(error);
+        }
+
+    }
+
     return (
         <ChakraProvider>
             <Box bg="gray.50" minH="100vh" p={6}>
                 <Box maxW="600px" mx="auto">
-                    <Heading mb={6}>foodimap</Heading>
+                    <VStack spacing={8}>
 
-                    <Button colorScheme="blue" onClick={onOpen}>
-                        Post
-                    </Button>
+                        <Heading>foodimap</Heading>
 
+                        <Button colorScheme="blue" onClick={onOpen}>
+                            Post
+                        </Button>
+
+                        <Button colorScheme="red" onClick={handleLogout}>
+                            Logout
+                        </Button>
+                    </VStack>
                     {/* Modal for posting */}
                     <Modal isOpen={isOpen} onClose={onClose} isCentered>
                         <ModalOverlay />
