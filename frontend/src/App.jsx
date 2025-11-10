@@ -1,15 +1,19 @@
-import './App.css'
-
-import { Button, Box, Heading } from "@chakra-ui/react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./pages/LoginPage.jsx";
+import SignupPage from "./pages/SignupPage.jsx";
+import HomePage from "./pages/HomePage.jsx";
 
 function App() {
     return (
-        <Box textAlign="center" mt={10}>
-            <Heading>Hello Chakra + Vite!</Heading>
-            <Button colorScheme="teal" mt={4}>
-                Click me
-            </Button>
-        </Box>
+        <Router>
+            {/* Define page routes here */}
+            <Routes>
+                <Route path="/" element={<LoginPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/home" element={<HomePage />} />
+            </Routes>
+        </Router>
     );
 }
 
