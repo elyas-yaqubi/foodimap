@@ -2,6 +2,7 @@ package com.foodimap.foodimap.controller;
 
 import com.foodimap.foodimap.dto.LoginRequest;
 import com.foodimap.foodimap.dto.LoginResponse;
+import com.foodimap.foodimap.dto.RegisterRequest;
 import com.foodimap.foodimap.model.User;
 import com.foodimap.foodimap.service.UserService;
 import com.foodimap.foodimap.util.JwtUtils;
@@ -40,8 +41,15 @@ public class AuthController {
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            User user = userService.findByUsername(loginRequest.getUsername())
-                    .orElseThrow(() -> new RuntimeException("User not found"));
+            User user;
+
+            if (loginRequest.getUsername().contains("@")) {
+                user = userService.findByEmailIgnoreCase(loginRequest.getUsername())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+            } else {
+                user = userService.findByUsername(loginRequest.getUsername())
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+            }
 
             String jwtToken = jwtUtils.generateToken(user);
 
@@ -55,22 +63,23 @@ public class AuthController {
             return ResponseEntity.ok(loginResponse);
         }
         catch (Exception e) {
-            return ResponseEntity.badRequest().body("Invalid username or password");
+
+            return ResponseEntity.badRequest().body(e.toString());
         }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody User user) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
 
-        if (userService.existsByUsername(user.getUsername())) {
+        if (userService.existsByUsername(registerRequest.getUsername())) {
             return ResponseEntity.badRequest().body("Username is already taken");
         }
 
-        if (userService.existsByEmail(user.getEmail())) {
+        if (userService.existsByEmail(registerRequest.getEmail())) {
             return ResponseEntity.badRequest().body("Email is already in use");
         }
 
-        User savedUser = userService.registerUser(user);
+        User savedUser = userService.registerUser(registerRequest);
         return ResponseEntity.ok("User registered successfully");
     }
 }
