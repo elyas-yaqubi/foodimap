@@ -14,10 +14,13 @@ import {
   Link,
 } from '@chakra-ui/react';
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL;
 
 const SignupPage = () => {
+
+  const navigate = useNavigate();
   const toast = useToast();
 
   const [form, setForm] = useState({
@@ -32,7 +35,7 @@ const SignupPage = () => {
 
       setForm(prev => ({
           ...prev,
-          [e.target.username]: e.target.value,
+          [name]: value
       }));
   }
 
@@ -40,6 +43,15 @@ const SignupPage = () => {
     e.preventDefault();
 
     try {
+
+        const payload = {
+            username: form.username.trim(),
+            email: form.email.trim().toLowerCase(),
+            password: form.password
+        };
+
+        console.log("register payload:", payload);
+
         const response = await axios.post(`${backendApiUrl}/api/auth/register`, {
             username: form.username,
             email: form.email,
@@ -47,6 +59,7 @@ const SignupPage = () => {
         })
 
         console.log(response.data);
+
         toast({
             title: 'Account created!',
             description: 'You have successfully signed up.',
@@ -54,6 +67,8 @@ const SignupPage = () => {
             duration: 3000,
             isClosable: true,
         });
+
+        navigate("/login");
 
     } catch (error) {
         console.error(error);
@@ -88,18 +103,18 @@ const SignupPage = () => {
 
           <FormControl id="email" isRequired>
             <FormLabel>Email address</FormLabel>
-            <Input name="email" type="email" placeholder="you@example.com" onChange={handleChange} />
+            <Input name="email" type="email" placeholder="you@example.com" onChange={handleChange} value={form.email} />
             <FormHelperText>Use a valid email to verify your account.</FormHelperText>
           </FormControl>
 
           <FormControl id="username" isRequired>
             <FormLabel>Username</FormLabel>
-            <Input name="username" type="username" placeholder="user" onChange={handleChange} />
+            <Input name="username" type="username" placeholder="Username" onChange={handleChange} value={form.username} />
           </FormControl>
 
           <FormControl id="password" isRequired>
             <FormLabel>Password</FormLabel>
-            <Input name="password" type="password" placeholder="********" onChange={handleChange} />
+            <Input name="password" type="password" placeholder="********" onChange={handleChange} value={form.password} />
           </FormControl>
 
           <Button colorScheme="blue" type="submit" width="full">

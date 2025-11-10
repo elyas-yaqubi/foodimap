@@ -14,10 +14,13 @@ import {
     VStack,
     useToast, useAccordion,
 } from '@chakra-ui/react';
+import {useNavigate} from "react-router-dom";
 
 const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL;
 
 const LoginPage = () => {
+
+    const navigate = useNavigate();
     const toast = useToast();
 
     const [username, setUsername] = useState("");
@@ -43,6 +46,7 @@ const LoginPage = () => {
             });
 
             console.log(response.data);
+
             toast({
                 title: 'Logged in!',
                 description: 'You have successfully logged in.',
@@ -50,6 +54,10 @@ const LoginPage = () => {
                 duration: 3000,
                 isClosable: true,
             });
+
+            localStorage.setItem("token", response.data.token);
+
+            navigate("/home");
 
         } catch (error) {
             console.error(error);
@@ -61,14 +69,6 @@ const LoginPage = () => {
                 isClosable: true,
             });
         }
-
-        // toast({
-        //     title: 'Logged in!',
-        //     description: 'You have successfully logged in.',
-        //     status: 'success',
-        //     duration: 3000,
-        //     isClosable: true,
-        // });
     };
 
     return (
@@ -87,13 +87,13 @@ const LoginPage = () => {
 
                     <FormControl id="email" isRequired>
                         <FormLabel>Email address</FormLabel>
-                        <Input name="username" type="email" placeholder="you@example.com" />
+                        <Input name="username" type="email" placeholder="you@example.com" onChange={handleChange} value={username} />
                         <FormHelperText>We'll never share your email.</FormHelperText>
                     </FormControl>
 
                     <FormControl id="password" isRequired>
                         <FormLabel>Password</FormLabel>
-                        <Input name="password" type="password" placeholder="********" />
+                        <Input name="password" type="password" placeholder="********" onChange={handleChange} value={password} />
                     </FormControl>
 
                     <Button colorScheme="blue" type="submit" width="full">
