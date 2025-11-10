@@ -82,4 +82,12 @@ public class AuthController {
         User savedUser = userService.registerUser(registerRequest);
         return ResponseEntity.ok("User registered successfully");
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
+
+        SecurityContextHolder.clearContext();
+
+        return ResponseEntity.ok("Logged out successfully");
+    }
 }
