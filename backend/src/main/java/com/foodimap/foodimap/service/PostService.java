@@ -7,6 +7,7 @@ import com.foodimap.foodimap.model.PostType;
 import com.foodimap.foodimap.model.User;
 import com.foodimap.foodimap.repository.PostRepository;
 import com.foodimap.foodimap.repository.UserRepository;
+import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,9 @@ public class PostService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private ServletContext servletContext;
+
     public PostResponse createPost(PostRequest request, String username) {
 
         User user = userRepository.findByUsername(username)
@@ -31,7 +35,8 @@ public class PostService {
         post.setUser(user);
         post.setCaption(request.getCaption());
         post.setCreatedAt(post.getCreatedAt());
-        post.setImageUrl(request.getImageUrl());
+
+        post.setImageUrl();
         switch (request.getPostType().toLowerCase()) {
             case "review":
                 post.setPostType(PostType.REVIEW);

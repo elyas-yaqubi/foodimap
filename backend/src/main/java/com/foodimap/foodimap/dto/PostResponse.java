@@ -3,6 +3,7 @@ package com.foodimap.foodimap.dto;
 import com.foodimap.foodimap.model.PostType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
 
