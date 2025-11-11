@@ -9,10 +9,20 @@ import com.foodimap.foodimap.repository.PostRepository;
 import com.foodimap.foodimap.repository.UserRepository;
 import jakarta.servlet.ServletContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PostService {
@@ -26,17 +36,26 @@ public class PostService {
     @Autowired
     private ServletContext servletContext;
 
-    public PostResponse createPost(PostRequest request, String username) {
+    @Value("${upload.path}")
+    private String uploadPath;
+
+    public PostResponse createPost(PostRequest request, String username) throws IOException {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+
+        MultipartFile imageFile = request.getImage();
+
+        String imageUrl = null;
+        if (imageFile != null && !imageFile.isEmpty()) {
+            imageUrl = servletContext.getContextPath() + storeImage(imageFile);
+        }
 
         Post post = new Post();
         post.setUser(user);
         post.setCaption(request.getCaption());
         post.setCreatedAt(post.getCreatedAt());
-
-        post.setImageUrl();
+        post.setImageUrl(imageUrl);
         switch (request.getPostType().toLowerCase()) {
             case "review":
                 post.setPostType(PostType.REVIEW);
@@ -49,7 +68,7 @@ public class PostService {
         return new PostResponse(
                 savedPost.getId(),
                 savedPost.getCaption(),
-                savedPost.getImageUrl(),
+                imageUrl,
                 savedPost.getPostType().toString().toLowerCase(),
                 user.getUsername(),
                 savedPost.getCreatedAt()
@@ -58,5 +77,16 @@ public class PostService {
 
     public List<Post> getAllPosts() {
         return postRepository.findAll();
+    }
+
+    public String storeImage(MultipartFile file) throws IOException {
+        String fileName = UUID.randomUUID().toString() + "_" + StringUtils.cleanPath(file.getOriginalFilename());
+        Path target = Paths.get(uploadPath).resolve(fileName);
+        Files.createDirectories(target.getParent());
+        try (InputStream in = file.getInputStream()) {
+            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return "/uploads/images/" + fileName;
     }
 }
