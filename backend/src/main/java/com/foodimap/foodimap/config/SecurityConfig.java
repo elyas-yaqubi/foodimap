@@ -70,12 +70,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable()) // disable CSRF for APIs
                 .authorizeHttpRequests(auth -> auth
-                        // allow anyone to GET posts
-                        .requestMatchers(HttpMethod.GET, "/api/post/**").permitAll()
-                        // require authentication for POST, PUT, DELETE
-                        .requestMatchers(HttpMethod.POST, "/api/post/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/post/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/post/**").authenticated()
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 // session management (stateless if using JWT)
