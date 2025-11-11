@@ -34,7 +34,7 @@ public class PostController {
 
         try {
 
-            String username = null;
+            String username = "user";
 
             PostRequest postRequest = new PostRequest(caption, image, postType);
 
