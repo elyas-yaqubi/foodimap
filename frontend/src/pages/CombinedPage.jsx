@@ -102,8 +102,7 @@ function CombinedPage() {
 
             const response = await axios.post(`${backendApiUrl}/api/post`, formData, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`, // keep auth header
-                    // DO NOT set 'Content-Type' — let browser set the boundary
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
                 // withCredentials: true, // enable only if you use cookie auth
             });
