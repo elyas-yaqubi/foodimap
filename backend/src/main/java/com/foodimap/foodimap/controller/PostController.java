@@ -4,6 +4,7 @@ import com.foodimap.foodimap.dto.PostRequest;
 import com.foodimap.foodimap.dto.PostResponse;
 import com.foodimap.foodimap.model.Post;
 import com.foodimap.foodimap.service.PostService;
+import com.foodimap.foodimap.util.JwtUtils;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,9 @@ public class PostController {
     @Autowired
     PostService postService;
 
+    @Autowired
+    JwtUtils jwtUtils;
+
     @PostMapping
     public ResponseEntity<?> createPost(@RequestPart("caption") String caption,
                                         @RequestPart("postType") String postType,
@@ -29,7 +33,8 @@ public class PostController {
                                         @AuthenticationPrincipal UserDetails userDetails) {
 
         try {
-            String username = userDetails.getUsername();
+
+            String username = null;
 
             PostRequest postRequest = new PostRequest(caption, image, postType);
 
