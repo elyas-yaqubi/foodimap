@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -20,10 +21,14 @@ public class PostController {
     PostService postService;
 
     @PostMapping
-    public ResponseEntity<?> createPost(@Valid @RequestBody PostRequest postRequest) {
+    public ResponseEntity<?> createPost(@RequestPart("caption") String caption,
+                                        @RequestPart("postType") String postType,
+                                        @RequestPart("image") MultipartFile image) {
 
         try {
             String username = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            PostRequest postRequest = new PostRequest(caption, image, postType);
 
             PostResponse response = postService.createPost(postRequest, username);
 
