@@ -100,11 +100,10 @@ function CombinedPage() {
             formData.append('caption', caption);
             formData.append('postType', postType);
 
+            const token = localStorage.getItem("token");
+
             const response = await axios.post(`${backendApiUrl}/api/post`, formData, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                },
-                // withCredentials: true, // enable only if you use cookie auth
+                headers: { Authorization: `Bearer ${token}` }
             });
 
             const newPost = {
