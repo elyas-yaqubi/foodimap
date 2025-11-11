@@ -60,9 +60,7 @@ function CombinedPage() {
                 setLoading(true);
                 setError(null);
 
-                const response = await axios.get(`${backendApiUrl}/api/post`, {
-                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-                });
+                const response = await axios.get(`${backendApiUrl}/api/post`);
 
                 const postsWithDates = response.data.map(post => ({
                     ...post,
@@ -102,9 +100,7 @@ function CombinedPage() {
 
             const token = localStorage.getItem("token");
 
-            const response = await axios.post(`${backendApiUrl}/api/post`, formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await axios.post(`${backendApiUrl}/api/post`, formData);
 
             const newPost = {
                 ...response.data,
