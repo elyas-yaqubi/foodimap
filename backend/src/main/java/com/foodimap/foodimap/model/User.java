@@ -6,6 +6,9 @@ import lombok.Data;
 import lombok.Generated;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -26,8 +29,20 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
     @Enumerated(EnumType.STRING)
-    Role role = Role.USER;
+    private Role role = Role.USER;
 
     private boolean enabled = true;
+
+    public void addPost(Post post) {
+        posts.add(post);
+    }
+
+    public void removePost(Post post) {
+        posts.remove(post);
+        post.setUser(null);
+    }
 }
