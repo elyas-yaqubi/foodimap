@@ -51,28 +51,22 @@ function HomePage() {
   // --- Dummy posts for initial display ---
   const dummyPosts = [
     {
-      id: 1,
       userName: 'Jon Doe',
       imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
       caption: 'Amazing sushi platter from Tokyo Sushi!',
       timestamp: new Date(Date.now() - 3600 * 1000 * 2),
-      userAvatar: '',
     },
     {
-      id: 2,
       userName: 'Jane Smith',
       imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
       caption: 'Tried making a vegan burger recipe--its a hit!!',
       timestamp: new Date(Date.now() - 3600 * 1000 * 5),
-      userAvatar: '',
     },
     {
-      id: 3,
       userName: 'June Parker',
       imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
       caption: 'BBQ night with friends!!',
       timestamp: new Date(Date.now() - 86400 * 1000),
-      userAvatar: '',
     },
   ];
 
