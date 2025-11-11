@@ -81,13 +81,14 @@ const LoginPage = () => {
                 w={{ base: '90%', sm: '400px' }}
             >
                 <VStack spacing={4} as="form" onSubmit={handleLogin}>
+
                     <Heading as="h2" size="lg" textAlign="center">
-                        Welcome Back
+                        FoodiMap
                     </Heading>
 
                     <FormControl id="email" isRequired>
-                        <FormLabel>Email address</FormLabel>
-                        <Input name="username" type="email" placeholder="you@example.com" onChange={handleChange} value={username} />
+                        <FormLabel>Username / Email</FormLabel>
+                        <Input name="username" placeholder="Username or Email" onChange={handleChange} value={username} />
                         <FormHelperText>We'll never share your email.</FormHelperText>
                     </FormControl>
 
