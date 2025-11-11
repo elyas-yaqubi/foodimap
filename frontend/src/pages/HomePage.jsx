@@ -19,7 +19,6 @@ import {
   Image,
   VStack,
   Select,
-  Container,
   SimpleGrid,
   Card,
   CardBody,
@@ -31,7 +30,8 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  Flex
+  Flex,
+  Grid
 } from '@chakra-ui/react';
 import { Clock } from 'lucide-react';
 import axios from 'axios';
@@ -39,54 +39,55 @@ import { useNavigate } from 'react-router-dom';
 
 const backendApiUrl = import.meta.env.VITE_BACKEND_API_URL;
 
-function CombinedPage() {
+function HomePage() {
   const navigate = useNavigate();
-
-  // --- Modal for new post ---
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [caption, setCaption] = useState('');
   const [postType, setPostType] = useState('Review');
 
-  // --- Feed states ---
-  const [posts, setPosts] = useState([]);
+  // --- Dummy posts for initial display ---
+  const dummyPosts = [
+    {
+      id: 1,
+      userName: 'Jon Doe',
+      imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+      caption: 'Amazing sushi platter from Tokyo Sushi!',
+      timestamp: new Date(Date.now() - 3600 * 1000 * 2),
+      userAvatar: '',
+    },
+    {
+      id: 2,
+      userName: 'Jane Smith',
+      imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+      caption: 'Tried making a vegan burger recipe--its a hit!!',
+      timestamp: new Date(Date.now() - 3600 * 1000 * 5),
+      userAvatar: '',
+    },
+    {
+      id: 3,
+      userName: 'June Parker',
+      imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+      caption: 'BBQ night with friends!!',
+      timestamp: new Date(Date.now() - 86400 * 1000),
+      userAvatar: '',
+    },
+  ];
+
+  const [posts, setPosts] = useState(dummyPosts);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const dummyPosts = [
-      {
-          userName: 'Jon Doe',
-          image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-          caption: 'Amazing sushi platter from Tokyo Sushi!'
-          timestamp: new Date(Date.now() - 3600 * 1000 * 2)
-          },
-
-      {
-          userName: 'Jane Smith',
-          image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-          caption: 'Tried making a vegan burger recipe--its a hit!!',
-          timestamp: new Date(Date.now() - 3600 * 1000 * 5)
-          },
-      {
-          userName: 'June Parker',
-          image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
-          caption: 'BBQ night with friends!!'
-          timestamp: new Date(Date.now() - 86400 * 1000)
-          },
-      ]
-
+  // Fetch posts from backend
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         setLoading(true);
-        setError(null);
-
-        //Replace with actual backend endpoint
         const response = await axios.get(`${backendApiUrl}/api/posts`, {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
-
         const postsWithDates = response.data.map(post => ({
           ...post,
           timestamp: new Date(post.timestamp),
@@ -99,11 +100,10 @@ function CombinedPage() {
         setLoading(false);
       }
     };
-
     fetchPosts();
   }, []);
 
-  const handleImageUpload = (e) => { //Handle image upload to backend
+  const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setImageFile(file);
@@ -111,32 +111,27 @@ function CombinedPage() {
     }
   };
 
-  const handlePost = async () => { //Handle new post submission to backend
+  const handlePost = async () => {
     if (!imageFile || !caption) {
       alert('Please upload an image and write a caption.');
       return;
     }
-
     try {
       const formData = new FormData();
       formData.append('image', imageFile);
       formData.append('caption', caption);
       formData.append('postType', postType);
-
       const response = await axios.post(`${backendApiUrl}/api/posts`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-
       const newPost = {
         ...response.data,
         timestamp: new Date(response.data.timestamp || Date.now()),
       };
-
       setPosts([newPost, ...posts]);
-
       onClose();
       setImageFile(null);
       setImagePreview(null);
@@ -150,8 +145,7 @@ function CombinedPage() {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post(`${backendApiUrl}/api/auth/logout`);
-      console.log(response.data);
+      await axios.post(`${backendApiUrl}/api/auth/logout`);
       localStorage.removeItem('token');
       navigate('/login');
     } catch (error) {
@@ -162,7 +156,6 @@ function CombinedPage() {
   const getTimeAgo = (timestamp) => {
     const now = new Date();
     const diff = Math.floor((now - timestamp) / 1000);
-
     if (diff < 60) return 'Just now';
     if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
     if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
@@ -172,29 +165,45 @@ function CombinedPage() {
 
   return (
     <ChakraProvider>
-      <Box bg="gray.50" minH="100vh" p={6}>
-        <Container maxW="container.xl">
-          <VStack spacing={8}>
+      <Box bg="gray.50" minH="100vh">
+        <Grid templateColumns={{ base: '1fr', lg: '250px 1fr' }} h="100vh">
 
-            {/* Header */}
-            <Heading>foodimap</Heading>
-
-            {/* Action buttons */}
-            <HStack spacing={4}>
+          {/* Fixed Sidebar */}
+          <Box
+            position="fixed"
+            left="0"
+            top="0"
+            w={{ base: '100%', lg: '250px' }}
+            h="100vh"
+            bg="white"
+            boxShadow="md"
+            borderRight="1px solid"
+            borderColor="gray.200"
+            p={6}
+            zIndex={10}
+          >
+            <VStack align="stretch" spacing={6}>
+              <Heading size="md" textAlign="center">foodimap</Heading>
               <Button colorScheme="blue" onClick={onOpen}>
                 Create Post
               </Button>
               <Button colorScheme="red" onClick={handleLogout}>
                 Logout
               </Button>
-            </HStack>
+            </VStack>
+          </Box>
 
-            {/* Feed Section */}
-            <Heading size="lg" color="gray.700" textAlign="center">
+          {/* Scrollable Feed */}
+          <Box
+            ml={{ base: 0, lg: '250px' }}
+            h="100vh"
+            overflowY="auto"
+            p={6}
+          >
+            <Heading size="lg" color="gray.700" mb={6} textAlign="center">
               Food Reviews
             </Heading>
 
-            {/* Loading State */}
             {loading && (
               <Flex justify="center" align="center" minH="400px">
                 <VStack spacing={4}>
@@ -204,7 +213,6 @@ function CombinedPage() {
               </Flex>
             )}
 
-            {/* Error State */}
             {error && (
               <Alert status="error" borderRadius="md">
                 <AlertIcon />
@@ -215,7 +223,6 @@ function CombinedPage() {
               </Alert>
             )}
 
-            {/* Empty State */}
             {!loading && !error && posts.length === 0 && (
               <Flex justify="center" align="center" minH="400px">
                 <VStack spacing={2}>
@@ -229,7 +236,6 @@ function CombinedPage() {
               </Flex>
             )}
 
-            {/* Posts Grid */}
             {!loading && !error && posts.length > 0 && (
               <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
                 {posts.map((post) => (
@@ -265,11 +271,11 @@ function CombinedPage() {
                 ))}
               </SimpleGrid>
             )}
-          </VStack>
-        </Container>
+          </Box>
+        </Grid>
       </Box>
 
-      {/* --- Modal for creating new post --- */}
+      {/* Modal for Creating Post */}
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent>
@@ -290,7 +296,9 @@ function CombinedPage() {
                 <Input type="file" accept="image/*" onChange={handleImageUpload} />
               </FormControl>
 
-              {imagePreview && <Image src={imagePreview} alt="Preview" maxH="200px" borderRadius="md" />}
+              {imagePreview && (
+                <Image src={imagePreview} alt="Preview" maxH="200px" borderRadius="md" />
+              )}
 
               <FormControl>
                 <FormLabel>Caption</FormLabel>
@@ -313,4 +321,4 @@ function CombinedPage() {
   );
 }
 
-export default CombinedPage;
+export default HomePage;
