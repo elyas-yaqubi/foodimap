@@ -54,6 +54,28 @@ function CombinedPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const dummyPosts = [
+      {
+          userName: 'Jon Doe',
+          image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+          caption: 'Amazing sushi platter from Tokyo Sushi!'
+          timestamp: new Date(Date.now() - 3600 * 1000 * 2)
+          },
+
+      {
+          userName: 'Jane Smith',
+          image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+          caption: 'Tried making a vegan burger recipe--its a hit!!',
+          timestamp: new Date(Date.now() - 3600 * 1000 * 5)
+          },
+      {
+          userName: 'June Parker',
+          image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836',
+          caption: 'BBQ night with friends!!'
+          timestamp: new Date(Date.now() - 86400 * 1000)
+          },
+      ]
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
