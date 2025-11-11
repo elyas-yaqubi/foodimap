@@ -44,7 +44,7 @@ function CombinedPage() {
 
     // --- Modal for new post ---
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const [imageFile, setImageFile] = useState(null);
+    const [image, setImage] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [caption, setCaption] = useState('');
     const [postType, setPostType] = useState('Review');
@@ -83,26 +83,32 @@ function CombinedPage() {
     const handleImageUpload = (e) => { //Handle image upload to backend
         const file = e.target.files[0];
         if (file) {
-            setImageFile(file);
+            setImage(file);
             setImagePreview(URL.createObjectURL(file));
         }
     };
 
-    const handlePost = async () => { //Handle new post submission to backend
-        if (!imageFile || !caption) {
+    const handlePost = async () => {
+        if (!image || !caption) {
             alert('Please upload an image and write a caption.');
             return;
         }
 
         try {
-            const formData = new FormData();
-            formData.append('image', imageFile);
-            formData.append('caption', caption);
-            formData.append('postType', postType);
+            const payload = {
+                "caption": caption,
+                "image": image,
+                "postType": postType
+            }
 
-            const response = await axios.post(`${backendApiUrl}/api/post`, formData, {
+            console.log("post payload:", payload);
+
+            const response = await axios.post(`${backendApiUrl}/api/post`, {
+                caption,
+                image,
+                postType
+            }, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
                 },
             });
@@ -115,12 +121,13 @@ function CombinedPage() {
             setPosts([newPost, ...posts]);
 
             onClose();
-            setImageFile(null);
+            setImage(null);
             setImagePreview(null);
             setCaption('');
             setPostType('Review');
         } catch (err) {
             console.error('Upload failed:', err);
+            console.error('server body:', err.response?.data);
             alert('Failed to upload post. Please try again.');
         }
     };
