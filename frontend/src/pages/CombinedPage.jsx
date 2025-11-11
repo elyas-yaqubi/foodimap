@@ -100,7 +100,7 @@ function CombinedPage() {
             formData.append('caption', caption);
             formData.append('postType', postType);
 
-            const response = await axios.post(`${backendApiUrl}/api/posts`, formData, {
+            const response = await axios.post(`${backendApiUrl}/api/post`, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${localStorage.getItem('token')}`,
