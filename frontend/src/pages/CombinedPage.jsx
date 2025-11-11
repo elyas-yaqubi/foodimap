@@ -95,32 +95,27 @@ function CombinedPage() {
         }
 
         try {
-            const payload = {
-                "caption": caption,
-                "image": image,
-                "postType": postType
-            }
+            const formData = new FormData();
+            formData.append('image', image);
+            formData.append('caption', caption);
+            formData.append('postType', postType);
 
-            console.log("post payload:", payload);
-
-            const response = await axios.post(`${backendApiUrl}/api/post`, {
-                caption,
-                image,
-                postType
-            }, {
+            const response = await axios.post(`${backendApiUrl}/api/post`, formData, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                    Authorization: `Bearer ${localStorage.getItem('token')}`, // keep auth header
+                    // DO NOT set 'Content-Type' — let browser set the boundary
                 },
+                // withCredentials: true, // enable only if you use cookie auth
             });
 
             const newPost = {
                 ...response.data,
-                timestamp: new Date(response.data.timestamp || Date.now()),
+                timestamp: new Date(response.data.timestamp ?? response.data.createdAt ?? Date.now()),
             };
 
-            setPosts([newPost, ...posts]);
-
+            setPosts(prev => [newPost, ...prev]);
             onClose();
+            if (imagePreview) URL.revokeObjectURL(imagePreview);
             setImage(null);
             setImagePreview(null);
             setCaption('');
@@ -128,7 +123,7 @@ function CombinedPage() {
         } catch (err) {
             console.error('Upload failed:', err);
             console.error('server body:', err.response?.data);
-            alert('Failed to upload post. Please try again.');
+            alert(err.response?.data?.error || err.response?.data || err.message || 'Failed to upload post.');
         }
     };
 
