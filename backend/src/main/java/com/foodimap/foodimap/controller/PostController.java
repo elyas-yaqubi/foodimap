@@ -7,7 +7,9 @@ import com.foodimap.foodimap.service.PostService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,10 +25,11 @@ public class PostController {
     @PostMapping
     public ResponseEntity<?> createPost(@RequestPart("caption") String caption,
                                         @RequestPart("postType") String postType,
-                                        @RequestPart("image") MultipartFile image) {
+                                        @RequestPart("image") MultipartFile image,
+                                        @AuthenticationPrincipal UserDetails userDetails) {
 
         try {
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            String username = userDetails.getUsername();
 
             PostRequest postRequest = new PostRequest(caption, image, postType);
 
