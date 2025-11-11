@@ -79,13 +79,13 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/post/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/post/**").permitAll()
-                        .requestMatchers("/api/**").permitAll()
-                        .anyRequest().authenticated()
+//                        .requestMatchers(HttpMethod.GET, "/api/post/**").permitAll()
+//                        .requestMatchers(HttpMethod.POST, "/api/post/**").permitAll()
+//                        .requestMatchers("/api/**").permitAll()
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
 
         return httpSecurity.build();
